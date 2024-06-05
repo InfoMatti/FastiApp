@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +37,7 @@ import java.util.Arrays;
 public class TerminalFragment extends Fragment implements ServiceConnection, SerialListener {
 
     private enum Connected { False, Pending, True }
-
+    private Button myButton;
     private String deviceAddress;
     private SerialService service;
 
@@ -138,8 +139,25 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         sendText.addTextChangedListener(hexWatcher);
         sendText.setHint(hexEnabled ? "HEX mode" : "");
 
-        View sendBtn = view.findViewById(R.id.send_btn);
+       View sendBtn = view.findViewById(R.id.send_btn);
         sendBtn.setOnClickListener(v -> send(sendText.getText().toString()));
+        myButton = view.findViewById(R.id.button);
+
+        // Imposta un click listener sul bottone
+        myButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Crea una nuova istanza del secondo fragment
+                SecondFragment secondFragment = new SecondFragment();
+
+                // Sostituisci il fragment corrente con il secondo fragment
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.pag2, secondFragment) // Assicurati di sostituire con l'ID del tuo container di fragment
+                        .addToBackStack(null) // Opzionale: Aggiungi allo stack di back se vuoi poter navigare indietro
+                        .commit();
+            }
+
+        });
         return view;
     }
 
@@ -211,7 +229,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         } catch (Exception e) {
             onSerialConnectError(e);
         }
-    }
+    };
 
     private void disconnect() {
         connected = Connected.False;
